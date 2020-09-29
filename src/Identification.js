@@ -29,7 +29,7 @@ class Identification extends Component {
   };
   handleSearchInputSubmit = async (event) => {
     event.preventDefault();
-    const URL = "https://teachablemachine.withgoogle.com/models/2nLyyKvGE/";
+    const URL = "https://teachablemachine.withgoogle.com/models/-7mqg1t6m/";
     const modelURL = URL + "model.json";
     const metadataURL = URL + "metadata.json";
 
