@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Bird Identification",
+  "name": "Bird Identification Application",
   "icons": [
     {
       "src": "favicon.ico",
