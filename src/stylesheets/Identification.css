@@ -1,0 +1,14 @@
+.Identification {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.Identification-Results {
+  flex-grow: 1;
+  margin: 1rem;
+  overflow: scroll;
+}
+.Identification-Links {
+  margin: 1rem 0;
+}
