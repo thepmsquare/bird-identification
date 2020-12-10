@@ -1,21 +1,21 @@
 {
   "files": {
-    "main.css": "/bird-identification/static/css/main.b287d144.chunk.css",
-    "main.js": "/bird-identification/static/js/main.ac0e5760.chunk.js",
-    "main.js.map": "/bird-identification/static/js/main.ac0e5760.chunk.js.map",
+    "main.css": "/bird-identification/static/css/main.e9a943a9.chunk.css",
+    "main.js": "/bird-identification/static/js/main.d25deeaf.chunk.js",
+    "main.js.map": "/bird-identification/static/js/main.d25deeaf.chunk.js.map",
     "runtime-main.js": "/bird-identification/static/js/runtime-main.c48b08fb.js",
     "runtime-main.js.map": "/bird-identification/static/js/runtime-main.c48b08fb.js.map",
-    "static/js/2.0cc5978d.chunk.js": "/bird-identification/static/js/2.0cc5978d.chunk.js",
-    "static/js/2.0cc5978d.chunk.js.map": "/bird-identification/static/js/2.0cc5978d.chunk.js.map",
+    "static/js/2.82547b86.chunk.js": "/bird-identification/static/js/2.82547b86.chunk.js",
+    "static/js/2.82547b86.chunk.js.map": "/bird-identification/static/js/2.82547b86.chunk.js.map",
     "index.html": "/bird-identification/index.html",
-    "static/css/main.b287d144.chunk.css.map": "/bird-identification/static/css/main.b287d144.chunk.css.map",
-    "static/js/2.0cc5978d.chunk.js.LICENSE.txt": "/bird-identification/static/js/2.0cc5978d.chunk.js.LICENSE.txt",
+    "static/css/main.e9a943a9.chunk.css.map": "/bird-identification/static/css/main.e9a943a9.chunk.css.map",
+    "static/js/2.82547b86.chunk.js.LICENSE.txt": "/bird-identification/static/js/2.82547b86.chunk.js.LICENSE.txt",
     "static/media/placeholder.23be8daa.jpg": "/bird-identification/static/media/placeholder.23be8daa.jpg"
   },
   "entrypoints": [
     "static/js/runtime-main.c48b08fb.js",
-    "static/js/2.0cc5978d.chunk.js",
-    "static/css/main.b287d144.chunk.css",
-    "static/js/main.ac0e5760.chunk.js"
+    "static/js/2.82547b86.chunk.js",
+    "static/css/main.e9a943a9.chunk.css",
+    "static/js/main.d25deeaf.chunk.js"
   ]
 }
