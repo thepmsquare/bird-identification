@@ -7,6 +7,7 @@ import PropTypes from "prop-types";
 import axios from "axios";
 import APItoken from "./IUCNToken";
 import imageModelIDs from "./imageModelIDs.json";
+import AudioPlayer from "material-ui-audio-player";
 // material
 import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
@@ -124,9 +125,18 @@ class Identification extends Component {
       searchValue: null,
       searchInputValue: "",
       showingResults: false,
+      display: {},
       predictedResult: {},
       snackbarOpen: false,
       snackbarMessage: "",
+      accordions: [
+        { name: "Taxonomy", isOpen: false },
+        { name: "Geographic Range", isOpen: false },
+        { name: "Population", isOpen: false },
+        { name: "Habitat and Ecology", isOpen: false },
+        { name: "Threats", isOpen: false },
+        { name: "Conservation Actions", isOpen: false },
+      ],
     };
     this.loadUniqueCommonNames();
   }
@@ -195,6 +205,7 @@ class Identification extends Component {
     this.setState(() => {
       return {
         showingResults: false,
+        display: {},
         snackbarOpen: true,
         snackbarMessage: "Image Loaded!",
       };
@@ -210,6 +221,7 @@ class Identification extends Component {
     const sortedPredictions = allPredictions.sort(
       (element1, element2) => element2.probability - element1.probability
     );
+    this.handleCloseResults();
     this.findBirdIDFromImage(sortedPredictions[0]);
   };
 
@@ -234,26 +246,41 @@ class Identification extends Component {
         if (prediction) {
           display.prediction = prediction;
         }
-        console.log(response);
-        // this.setState(() => {
-        //   return {
-        //     predictedResult: {
-        //       className: sortedPredictions[0].className,
-        //       probability: sortedPredictions[0].probability,
-        //     },
-        //     showingResults: true,
-        //   };
-        // });
+        display.title = response.data.result[0].main_common_name;
+        console.log(display);
+        this.setState(() => {
+          return {
+            display,
+            showingResults: true,
+          };
+        });
       })
       .catch((error) => {
-        // handle error
-        console.log(error);
+        this.setState(() => {
+          return {
+            snackbarOpen: true,
+            snackbarMessage: error,
+          };
+        });
       });
+  };
+
+  handleAccordianToggle = (name) => {
+    this.setState((curState) => {
+      let accordionsCopy = JSON.parse(JSON.stringify(curState.accordions));
+      let toggleThis = accordionsCopy.find((ele) => ele.name === name);
+      toggleThis.isOpen
+        ? (toggleThis.isOpen = false)
+        : (toggleThis.isOpen = true);
+      return {
+        accordions: accordionsCopy,
+      };
+    });
   };
 
   handleCloseResults = () => {
     this.setState(() => {
-      return { showingResults: false };
+      return { showingResults: false, display: {} };
     });
   };
 
@@ -328,46 +355,121 @@ class Identification extends Component {
         >
           <Card elevation={4}>
             <CardHeader
-              title={`${this.state.predictedResult.className}`}
-              subheader={`Probability: ${this.state.predictedResult.probability}`}
+              title={`${this.state.display.title}`}
+              subheader={
+                this.state.display.prediction
+                  ? `Prediction: ${this.state.display.prediction.className}, ${
+                      this.state.display.prediction.probability * 100
+                    }%`
+                  : ""
+              }
             />
             <CardMedia image={placeholder} style={{ paddingTop: "56.25%" }} />
+            {true && (
+              <CardContent>
+                <AudioPlayer
+                  src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
+                  volume={false}
+                  width="inital"
+                />
+              </CardContent>
+            )}
             <CardContent>
-              <Accordion expanded={true}>
+              <Accordion
+                expanded={
+                  this.state.accordions.find((ele) => ele.name === "Taxonomy")
+                    .isOpen
+                }
+              >
                 <AccordionSummary
+                  onClick={() => this.handleAccordianToggle("Taxonomy")}
                   expandIcon={<ExpandMoreIcon />}
-                  aria-controls="panel1bh-content"
-                  id="panel1bh-header"
+                >
+                  <Typography>Taxonomy</Typography>
+                </AccordionSummary>
+                <AccordionDetails></AccordionDetails>
+              </Accordion>
+
+              <Accordion
+                expanded={
+                  this.state.accordions.find(
+                    (ele) => ele.name === "Geographic Range"
+                  ).isOpen
+                }
+              >
+                <AccordionSummary
+                  onClick={() => this.handleAccordianToggle("Geographic Range")}
+                  expandIcon={<ExpandMoreIcon />}
+                >
+                  <Typography>Geographic Range</Typography>
+                </AccordionSummary>
+                <AccordionDetails></AccordionDetails>
+              </Accordion>
+
+              <Accordion
+                expanded={
+                  this.state.accordions.find((ele) => ele.name === "Population")
+                    .isOpen
+                }
+              >
+                <AccordionSummary
+                  onClick={() => this.handleAccordianToggle("Population")}
+                  expandIcon={<ExpandMoreIcon />}
                 >
                   <Typography>Population</Typography>
                 </AccordionSummary>
-                <AccordionDetails>
-                  <span>
-                    <Typography>Current population trend: Stable. </Typography>
-                    <Typography>
-                      Number of mature individuals: 630,000-725,000.
-                    </Typography>
-                    <Typography>
-                      Trend Justification: The population is suspected to be
-                      stable in the absence of evidence for any declines or
-                      substantial threats (del Hoyo et al. 1992).
-                    </Typography>
-                  </span>
-                </AccordionDetails>
+                <AccordionDetails></AccordionDetails>
               </Accordion>
-              <Accordion expanded={true}>
+
+              <Accordion
+                expanded={
+                  this.state.accordions.find(
+                    (ele) => ele.name === "Habitat and Ecology"
+                  ).isOpen
+                }
+              >
                 <AccordionSummary
+                  onClick={() =>
+                    this.handleAccordianToggle("Habitat and Ecology")
+                  }
                   expandIcon={<ExpandMoreIcon />}
-                  aria-controls="panel1bh-content"
-                  id="panel1bh-header"
                 >
-                  <Typography>Location</Typography>
+                  <Typography>Habitat and Ecology</Typography>
                 </AccordionSummary>
-                <AccordionDetails
-                  style={{ display: "flex", justifyContent: "center" }}
+                <AccordionDetails></AccordionDetails>
+              </Accordion>
+
+              <Accordion
+                expanded={
+                  this.state.accordions.find((ele) => ele.name === "Threats")
+                    .isOpen
+                }
+              >
+                <AccordionSummary
+                  onClick={() => this.handleAccordianToggle("Threats")}
+                  expandIcon={<ExpandMoreIcon />}
                 >
-                  <WorldMap frame color="red" data={data} />
-                </AccordionDetails>
+                  <Typography>Threats</Typography>
+                </AccordionSummary>
+                <AccordionDetails></AccordionDetails>
+              </Accordion>
+
+              <Accordion
+                expanded={
+                  this.state.accordions.find(
+                    (ele) => ele.name === "Conservation Actions"
+                  ).isOpen
+                }
+              >
+                <AccordionSummary
+                  onClick={() =>
+                    this.handleAccordianToggle("Conservation Actions")
+                  }
+                  expandIcon={<ExpandMoreIcon />}
+                >
+                  <Typography>Conservation Actions</Typography>
+                </AccordionSummary>
+                <AccordionDetails></AccordionDetails>
               </Accordion>
             </CardContent>
             <CardActions>
