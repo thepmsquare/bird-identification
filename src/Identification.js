@@ -130,7 +130,7 @@ class Identification extends Component {
       snackbarOpen: false,
       snackbarMessage: "",
       accordions: [
-        { name: "Taxonomy", isOpen: false },
+        { name: "Taxonomy", isOpen: true },
         { name: "Geographic Range", isOpen: false },
         { name: "Population", isOpen: false },
         { name: "Habitat and Ecology", isOpen: false },
@@ -247,13 +247,33 @@ class Identification extends Component {
           display.prediction = prediction;
         }
         display.title = response.data.result[0].main_common_name;
-        console.log(display);
-        this.setState(() => {
-          return {
-            display,
-            showingResults: true,
-          };
-        });
+        display.taxonomy = {
+          class: response.data.result[0].class,
+          family: response.data.result[0].family,
+          genus: response.data.result[0].genus,
+          kingdom: response.data.result[0].kingdom,
+          order: response.data.result[0].order,
+          phylum: response.data.result[0].phylum,
+          scientific_name: response.data.result[0].scientific_name,
+        };
+        axios
+          .get(
+            "https://apiv3.iucnredlist.org/api/v3/species/countries/id/" +
+              birdID +
+              "?token=" +
+              APItoken
+          )
+          .then((response) => {
+            display.geographicRange = response.data.result.map((ele) => {
+              return { country: ele.code, value: 1 };
+            });
+            this.setState(() => {
+              return {
+                display,
+                showingResults: true,
+              };
+            });
+          });
       })
       .catch((error) => {
         this.setState(() => {
@@ -291,7 +311,6 @@ class Identification extends Component {
   };
 
   render = () => {
-    const data = [{ country: "au", value: 630000 }];
     return (
       <div className="Identification">
         <Typography component="h1" variant="h2">
@@ -345,144 +364,194 @@ class Identification extends Component {
             <Typography>Featured bird: White-headed Duck</Typography>
           </div>
         )}
-
-        <Slide
-          direction="up"
-          in={this.state.showingResults}
-          mountOnEnter
-          unmountOnExit
-          className="Identification-Results"
-        >
-          <Card elevation={4}>
-            <CardHeader
-              title={`${this.state.display.title}`}
-              subheader={
-                this.state.display.prediction
-                  ? `Prediction: ${this.state.display.prediction.className}, ${
-                      this.state.display.prediction.probability * 100
-                    }%`
-                  : ""
-              }
-            />
-            <CardMedia image={placeholder} style={{ paddingTop: "56.25%" }} />
-            {true && (
+        {this.state.showingResults && (
+          <Slide
+            direction="up"
+            in={this.state.showingResults}
+            mountOnEnter
+            unmountOnExit
+            className="Identification-Results"
+          >
+            <Card elevation={4}>
+              <CardHeader
+                title={`${this.state.display.title}`}
+                subheader={
+                  this.state.display.prediction
+                    ? `Prediction: ${
+                        this.state.display.prediction.className
+                      }, ${this.state.display.prediction.probability * 100}%`
+                    : ""
+                }
+              />
+              <CardMedia image={placeholder} style={{ paddingTop: "56.25%" }} />
+              {true && (
+                <CardContent>
+                  <AudioPlayer
+                    src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
+                    volume={false}
+                    width="inital"
+                  />
+                </CardContent>
+              )}
               <CardContent>
-                <AudioPlayer
-                  src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
-                  volume={false}
-                  width="inital"
-                />
+                <Accordion
+                  expanded={
+                    this.state.accordions.find((ele) => ele.name === "Taxonomy")
+                      .isOpen
+                  }
+                >
+                  <AccordionSummary
+                    onClick={() => this.handleAccordianToggle("Taxonomy")}
+                    expandIcon={<ExpandMoreIcon />}
+                  >
+                    <Typography>Taxonomy</Typography>
+                  </AccordionSummary>
+                  <AccordionDetails>
+                    <div className="Identification-Taxonomy">
+                      <Typography>Scientific Name</Typography>
+                      <Typography>
+                        {this.state.display.taxonomy.scientific_name}
+                      </Typography>
+
+                      <Typography>Kingdom</Typography>
+                      <Typography>
+                        {this.state.display.taxonomy.kingdom}
+                      </Typography>
+
+                      <Typography>Phylum</Typography>
+                      <Typography>
+                        {this.state.display.taxonomy.phylum}
+                      </Typography>
+
+                      <Typography>Class</Typography>
+                      <Typography>
+                        {this.state.display.taxonomy.class}
+                      </Typography>
+
+                      <Typography>Order</Typography>
+                      <Typography>
+                        {this.state.display.taxonomy.order}
+                      </Typography>
+
+                      <Typography>Family</Typography>
+                      <Typography>
+                        {this.state.display.taxonomy.family}
+                      </Typography>
+
+                      <Typography>Genus</Typography>
+                      <Typography>
+                        {this.state.display.taxonomy.genus}
+                      </Typography>
+                    </div>
+                  </AccordionDetails>
+                </Accordion>
+
+                <Accordion
+                  expanded={
+                    this.state.accordions.find(
+                      (ele) => ele.name === "Geographic Range"
+                    ).isOpen
+                  }
+                >
+                  <AccordionSummary
+                    onClick={() =>
+                      this.handleAccordianToggle("Geographic Range")
+                    }
+                    expandIcon={<ExpandMoreIcon />}
+                  >
+                    <Typography>Geographic Range</Typography>
+                  </AccordionSummary>
+                  <AccordionDetails>
+                    <div className="Identification-GeographicRange">
+                      <WorldMap
+                        color="#1976d2"
+                        data={this.state.display.geographicRange}
+                        frame
+                        tooltipTextFunction={(countryName) => countryName}
+                      />
+                    </div>
+                  </AccordionDetails>
+                </Accordion>
+
+                <Accordion
+                  expanded={
+                    this.state.accordions.find(
+                      (ele) => ele.name === "Population"
+                    ).isOpen
+                  }
+                >
+                  <AccordionSummary
+                    onClick={() => this.handleAccordianToggle("Population")}
+                    expandIcon={<ExpandMoreIcon />}
+                  >
+                    <Typography>Population</Typography>
+                  </AccordionSummary>
+                  <AccordionDetails></AccordionDetails>
+                </Accordion>
+
+                <Accordion
+                  expanded={
+                    this.state.accordions.find(
+                      (ele) => ele.name === "Habitat and Ecology"
+                    ).isOpen
+                  }
+                >
+                  <AccordionSummary
+                    onClick={() =>
+                      this.handleAccordianToggle("Habitat and Ecology")
+                    }
+                    expandIcon={<ExpandMoreIcon />}
+                  >
+                    <Typography>Habitat and Ecology</Typography>
+                  </AccordionSummary>
+                  <AccordionDetails></AccordionDetails>
+                </Accordion>
+
+                <Accordion
+                  expanded={
+                    this.state.accordions.find((ele) => ele.name === "Threats")
+                      .isOpen
+                  }
+                >
+                  <AccordionSummary
+                    onClick={() => this.handleAccordianToggle("Threats")}
+                    expandIcon={<ExpandMoreIcon />}
+                  >
+                    <Typography>Threats</Typography>
+                  </AccordionSummary>
+                  <AccordionDetails></AccordionDetails>
+                </Accordion>
+
+                <Accordion
+                  expanded={
+                    this.state.accordions.find(
+                      (ele) => ele.name === "Conservation Actions"
+                    ).isOpen
+                  }
+                >
+                  <AccordionSummary
+                    onClick={() =>
+                      this.handleAccordianToggle("Conservation Actions")
+                    }
+                    expandIcon={<ExpandMoreIcon />}
+                  >
+                    <Typography>Conservation Actions</Typography>
+                  </AccordionSummary>
+                  <AccordionDetails></AccordionDetails>
+                </Accordion>
               </CardContent>
-            )}
-            <CardContent>
-              <Accordion
-                expanded={
-                  this.state.accordions.find((ele) => ele.name === "Taxonomy")
-                    .isOpen
-                }
-              >
-                <AccordionSummary
-                  onClick={() => this.handleAccordianToggle("Taxonomy")}
-                  expandIcon={<ExpandMoreIcon />}
+              <CardActions>
+                <Button
+                  size="small"
+                  color="secondary"
+                  onClick={this.handleCloseResults}
                 >
-                  <Typography>Taxonomy</Typography>
-                </AccordionSummary>
-                <AccordionDetails></AccordionDetails>
-              </Accordion>
-
-              <Accordion
-                expanded={
-                  this.state.accordions.find(
-                    (ele) => ele.name === "Geographic Range"
-                  ).isOpen
-                }
-              >
-                <AccordionSummary
-                  onClick={() => this.handleAccordianToggle("Geographic Range")}
-                  expandIcon={<ExpandMoreIcon />}
-                >
-                  <Typography>Geographic Range</Typography>
-                </AccordionSummary>
-                <AccordionDetails></AccordionDetails>
-              </Accordion>
-
-              <Accordion
-                expanded={
-                  this.state.accordions.find((ele) => ele.name === "Population")
-                    .isOpen
-                }
-              >
-                <AccordionSummary
-                  onClick={() => this.handleAccordianToggle("Population")}
-                  expandIcon={<ExpandMoreIcon />}
-                >
-                  <Typography>Population</Typography>
-                </AccordionSummary>
-                <AccordionDetails></AccordionDetails>
-              </Accordion>
-
-              <Accordion
-                expanded={
-                  this.state.accordions.find(
-                    (ele) => ele.name === "Habitat and Ecology"
-                  ).isOpen
-                }
-              >
-                <AccordionSummary
-                  onClick={() =>
-                    this.handleAccordianToggle("Habitat and Ecology")
-                  }
-                  expandIcon={<ExpandMoreIcon />}
-                >
-                  <Typography>Habitat and Ecology</Typography>
-                </AccordionSummary>
-                <AccordionDetails></AccordionDetails>
-              </Accordion>
-
-              <Accordion
-                expanded={
-                  this.state.accordions.find((ele) => ele.name === "Threats")
-                    .isOpen
-                }
-              >
-                <AccordionSummary
-                  onClick={() => this.handleAccordianToggle("Threats")}
-                  expandIcon={<ExpandMoreIcon />}
-                >
-                  <Typography>Threats</Typography>
-                </AccordionSummary>
-                <AccordionDetails></AccordionDetails>
-              </Accordion>
-
-              <Accordion
-                expanded={
-                  this.state.accordions.find(
-                    (ele) => ele.name === "Conservation Actions"
-                  ).isOpen
-                }
-              >
-                <AccordionSummary
-                  onClick={() =>
-                    this.handleAccordianToggle("Conservation Actions")
-                  }
-                  expandIcon={<ExpandMoreIcon />}
-                >
-                  <Typography>Conservation Actions</Typography>
-                </AccordionSummary>
-                <AccordionDetails></AccordionDetails>
-              </Accordion>
-            </CardContent>
-            <CardActions>
-              <Button
-                size="small"
-                color="secondary"
-                onClick={this.handleCloseResults}
-              >
-                Close
-              </Button>
-            </CardActions>
-          </Card>
-        </Slide>
+                  Close
+                </Button>
+              </CardActions>
+            </Card>
+          </Slide>
+        )}
 
         <Snackbar
           anchorOrigin={{
