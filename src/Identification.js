@@ -139,9 +139,9 @@ class Identification extends Component {
         { name: "Taxonomy", isOpen: true },
         { name: "Geographic Range", isOpen: true },
         { name: "Population", isOpen: true },
-        { name: "Habitat and Ecology", isOpen: false },
-        { name: "Threats", isOpen: false },
-        { name: "Conservation Actions", isOpen: false },
+        { name: "Habitat and Ecology", isOpen: true },
+        { name: "Threats", isOpen: true },
+        { name: "Conservation Actions", isOpen: true },
       ],
     };
     this.loadUniqueCommonNames();
@@ -260,6 +260,24 @@ class Identification extends Component {
         "?token=" +
         APItoken
     );
+    const habitatsByID = await axios.get(
+      "https://apiv3.iucnredlist.org/api/v3/habitats/species/id/" +
+        birdID +
+        "?token=" +
+        APItoken
+    );
+    const threatsByID = await axios.get(
+      "https://apiv3.iucnredlist.org/api/v3/threats/species/id/" +
+        birdID +
+        "?token=" +
+        APItoken
+    );
+    const actionsByID = await axios.get(
+      "https://apiv3.iucnredlist.org/api/v3/measures/species/id/" +
+        birdID +
+        "?token=" +
+        APItoken
+    );
 
     display.title = individualSpeciesByID.data.result[0].main_common_name;
     display.taxonomy = {
@@ -272,7 +290,7 @@ class Identification extends Component {
       scientific_name: individualSpeciesByID.data.result[0].scientific_name,
     };
     display.geographicRange = countryOccuranceByID.data.result.map((ele) => {
-      return { country: ele.code, value: Math.floor(Math.random() * 100) + 1 };
+      return { country: ele.code, value: Math.random() };
     });
     display.population = {
       trend: individualSpeciesByID.data.result[0].population_trend,
@@ -280,6 +298,17 @@ class Identification extends Component {
         JSON.stringify(historicalAssessmentsByID.data.result)
       ),
     };
+    display.habitats = habitatsByID.data.result.map(
+      (habitat) => habitat.habitat
+    );
+    display.threats = threatsByID.data.result.map((threat) => {
+      return {
+        title: threat.title,
+        timing: threat.timing,
+        score: threat.score,
+      };
+    });
+    display.actions = actionsByID.data.result.map((action) => action.title);
     this.setState(() => {
       return {
         display,
@@ -496,7 +525,7 @@ class Identification extends Component {
                       </Typography>
                       <Timeline>
                         {this.state.display.population.timeline.map((year) => (
-                          <TimelineItem>
+                          <TimelineItem key={year.year}>
                             <TimelineSeparator>
                               <Avatar variant="square">{year.year}</Avatar>
                               <TimelineConnector />
@@ -524,41 +553,71 @@ class Identification extends Component {
                   >
                     <Typography>Habitat and Ecology</Typography>
                   </AccordionSummary>
-                  <AccordionDetails></AccordionDetails>
+                  <AccordionDetails>
+                    <div className="Identification-HabitatAndEcology">
+                      {this.state.display.habitats.map((habitat, index) => (
+                        <Typography key={index}>{habitat}</Typography>
+                      ))}
+                    </div>
+                  </AccordionDetails>
                 </Accordion>
 
-                <Accordion
-                  expanded={
-                    this.state.accordions.find((ele) => ele.name === "Threats")
-                      .isOpen
-                  }
-                >
-                  <AccordionSummary
-                    onClick={() => this.handleAccordianToggle("Threats")}
-                    expandIcon={<ExpandMoreIcon />}
-                  >
-                    <Typography>Threats</Typography>
-                  </AccordionSummary>
-                  <AccordionDetails></AccordionDetails>
-                </Accordion>
-
-                <Accordion
-                  expanded={
-                    this.state.accordions.find(
-                      (ele) => ele.name === "Conservation Actions"
-                    ).isOpen
-                  }
-                >
-                  <AccordionSummary
-                    onClick={() =>
-                      this.handleAccordianToggle("Conservation Actions")
+                {this.state.display.threats.length !== 0 && (
+                  <Accordion
+                    expanded={
+                      this.state.accordions.find(
+                        (ele) => ele.name === "Threats"
+                      ).isOpen
                     }
-                    expandIcon={<ExpandMoreIcon />}
                   >
-                    <Typography>Conservation Actions</Typography>
-                  </AccordionSummary>
-                  <AccordionDetails></AccordionDetails>
-                </Accordion>
+                    <AccordionSummary
+                      onClick={() => this.handleAccordianToggle("Threats")}
+                      expandIcon={<ExpandMoreIcon />}
+                    >
+                      <Typography>Threats</Typography>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                      <div className="Identification-Threats">
+                        {this.state.display.threats.map((threat, index) => (
+                          <div
+                            key={index}
+                            className="Identification-ThreatsRow"
+                          >
+                            <Typography>{threat.title}</Typography>
+                            <Typography>{threat.timing}</Typography>
+                            <Typography>{threat.score}</Typography>
+                          </div>
+                        ))}
+                      </div>
+                    </AccordionDetails>
+                  </Accordion>
+                )}
+
+                {this.state.display.actions.length !== 0 && (
+                  <Accordion
+                    expanded={
+                      this.state.accordions.find(
+                        (ele) => ele.name === "Conservation Actions"
+                      ).isOpen
+                    }
+                  >
+                    <AccordionSummary
+                      onClick={() =>
+                        this.handleAccordianToggle("Conservation Actions")
+                      }
+                      expandIcon={<ExpandMoreIcon />}
+                    >
+                      <Typography>Conservation Actions</Typography>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                      <div className="Identification-ConservationActions">
+                        {this.state.display.actions.map((action, index) => (
+                          <Typography key={index}>{action}</Typography>
+                        ))}
+                      </div>
+                    </AccordionDetails>
+                  </Accordion>
+                )}
               </CardContent>
               <CardActions>
                 <Button

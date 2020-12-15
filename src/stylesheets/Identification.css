@@ -26,3 +26,12 @@
 .MuiAvatar-root {
   font-size: 1rem !important;
 }
+.Identification-HabitatAndEcology,
+.Identification-Threats,
+.Identification-ConservationActions {
+  text-align: start;
+}
+.Identification-ThreatsRow {
+  display: grid;
+  grid-template-columns: 3fr 1fr 2fr;
+}
