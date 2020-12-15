@@ -11,7 +11,7 @@
     "@material-ui/icons": "^4.11.2",
     "@material-ui/lab": "^4.0.0-alpha.57",
     "@teachablemachine/image": "^0.8.4",
-    "@tensorflow/tfjs": "^2.7.0",
+    "@tensorflow/tfjs": "^2.8.0",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.5.0",
     "@testing-library/user-event": "^7.2.1",
@@ -23,7 +23,7 @@
     "react": "^16.14.0",
     "react-dom": "^16.14.0",
     "react-scripts": "^4.0.1",
-    "react-svg-worldmap": "^1.0.36",
+    "react-svg-worldmap": "^1.0.37",
     "react-window": "^1.8.6"
   },
   "scripts": {

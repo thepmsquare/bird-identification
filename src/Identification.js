@@ -131,7 +131,7 @@ class Identification extends Component {
       snackbarMessage: "",
       accordions: [
         { name: "Taxonomy", isOpen: true },
-        { name: "Geographic Range", isOpen: false },
+        { name: "Geographic Range", isOpen: true },
         { name: "Population", isOpen: false },
         { name: "Habitat and Ecology", isOpen: false },
         { name: "Threats", isOpen: false },
@@ -204,8 +204,6 @@ class Identification extends Component {
     this.handleImageSubmit();
     this.setState(() => {
       return {
-        showingResults: false,
-        display: {},
         snackbarOpen: true,
         snackbarMessage: "Image Loaded!",
       };
@@ -221,7 +219,6 @@ class Identification extends Component {
     const sortedPredictions = allPredictions.sort(
       (element1, element2) => element2.probability - element1.probability
     );
-    this.handleCloseResults();
     this.findBirdIDFromImage(sortedPredictions[0]);
   };
 
@@ -233,56 +230,50 @@ class Identification extends Component {
     this.fetchDetailsFromAPI(birdID, prediction);
   };
 
-  fetchDetailsFromAPI = (birdID, prediction) => {
-    axios
-      .get(
-        "https://apiv3.iucnredlist.org/api/v3/species/id/" +
-          birdID +
-          "?token=" +
-          APItoken
-      )
-      .then((response) => {
-        let display = {};
-        if (prediction) {
-          display.prediction = prediction;
-        }
-        display.title = response.data.result[0].main_common_name;
-        display.taxonomy = {
-          class: response.data.result[0].class,
-          family: response.data.result[0].family,
-          genus: response.data.result[0].genus,
-          kingdom: response.data.result[0].kingdom,
-          order: response.data.result[0].order,
-          phylum: response.data.result[0].phylum,
-          scientific_name: response.data.result[0].scientific_name,
-        };
-        axios
-          .get(
-            "https://apiv3.iucnredlist.org/api/v3/species/countries/id/" +
-              birdID +
-              "?token=" +
-              APItoken
-          )
-          .then((response) => {
-            display.geographicRange = response.data.result.map((ele) => {
-              return { country: ele.code, value: 1 };
-            });
-            this.setState(() => {
-              return {
-                display,
-                showingResults: true,
-              };
-            });
-          });
-      })
-      .catch((error) => {
-        this.setState(() => {
-          return {
-            snackbarOpen: true,
-            snackbarMessage: error,
-          };
-        });
-      });
+  fetchDetailsFromAPI = async (birdID, prediction) => {
+    let display = {};
+    if (prediction) {
+      display.prediction = prediction;
+    }
+    const individualSpeciesByID = await axios.get(
+      "https://apiv3.iucnredlist.org/api/v3/species/id/" +
+        birdID +
+        "?token=" +
+        APItoken
+    );
+    const countryOccuranceByID = await axios.get(
+      "https://apiv3.iucnredlist.org/api/v3/species/countries/id/" +
+        birdID +
+        "?token=" +
+        APItoken
+    );
+    const historicalAssessmentsByID = await axios.get(
+      "https://apiv3.iucnredlist.org/api/v3/species/history/id/" +
+        birdID +
+        "?token=" +
+        APItoken
+    );
+
+    display.title = individualSpeciesByID.data.result[0].main_common_name;
+    display.taxonomy = {
+      class: individualSpeciesByID.data.result[0].class,
+      family: individualSpeciesByID.data.result[0].family,
+      genus: individualSpeciesByID.data.result[0].genus,
+      kingdom: individualSpeciesByID.data.result[0].kingdom,
+      order: individualSpeciesByID.data.result[0].order,
+      phylum: individualSpeciesByID.data.result[0].phylum,
+      scientific_name: individualSpeciesByID.data.result[0].scientific_name,
+    };
+    display.geographicRange = countryOccuranceByID.data.result.map((ele) => {
+      return { country: ele.code, value: Math.random() };
+    });
+
+    this.setState(() => {
+      return {
+        display,
+        showingResults: true,
+      };
+    });
   };
 
   handleAccordianToggle = (name) => {
