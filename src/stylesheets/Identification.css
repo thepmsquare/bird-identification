@@ -17,3 +17,12 @@
   display: flex;
   justify-content: center;
 }
+.Identification-Population {
+  width: 100%;
+}
+.MuiAvatar-colorDefault {
+  background-color: #1976d2 !important;
+}
+.MuiAvatar-root {
+  font-size: 1rem !important;
+}

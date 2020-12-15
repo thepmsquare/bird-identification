@@ -28,6 +28,12 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import { useTheme } from "@material-ui/core/styles";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import ListSubheader from "@material-ui/core/ListSubheader";
+import Timeline from "@material-ui/lab/Timeline";
+import TimelineItem from "@material-ui/lab/TimelineItem";
+import TimelineSeparator from "@material-ui/lab/TimelineSeparator";
+import TimelineConnector from "@material-ui/lab/TimelineConnector";
+import TimelineContent from "@material-ui/lab/TimelineContent";
+import Avatar from "@material-ui/core/Avatar";
 // material icons
 import SearchIcon from "@material-ui/icons/Search";
 import PhotoCameraIcon from "@material-ui/icons/PhotoCamera";
@@ -132,7 +138,7 @@ class Identification extends Component {
       accordions: [
         { name: "Taxonomy", isOpen: true },
         { name: "Geographic Range", isOpen: true },
-        { name: "Population", isOpen: false },
+        { name: "Population", isOpen: true },
         { name: "Habitat and Ecology", isOpen: false },
         { name: "Threats", isOpen: false },
         { name: "Conservation Actions", isOpen: false },
@@ -176,6 +182,7 @@ class Identification extends Component {
       let birdID = allBirdsWithCommonNames.find((ele) => {
         return ele.commonNames.includes(this.state.searchValue);
       }).id;
+      this.handleCloseResults();
       this.fetchDetailsFromAPI(birdID);
     } else {
       this.setState(() => {
@@ -226,7 +233,7 @@ class Identification extends Component {
     let birdID = imageModelIDs.find((ele) => {
       return ele.bird === prediction.className;
     }).id;
-
+    this.handleCloseResults();
     this.fetchDetailsFromAPI(birdID, prediction);
   };
 
@@ -265,9 +272,14 @@ class Identification extends Component {
       scientific_name: individualSpeciesByID.data.result[0].scientific_name,
     };
     display.geographicRange = countryOccuranceByID.data.result.map((ele) => {
-      return { country: ele.code, value: Math.random() };
+      return { country: ele.code, value: Math.floor(Math.random() * 100) + 1 };
     });
-
+    display.population = {
+      trend: individualSpeciesByID.data.result[0].population_trend,
+      timeline: JSON.parse(
+        JSON.stringify(historicalAssessmentsByID.data.result)
+      ),
+    };
     this.setState(() => {
       return {
         display,
@@ -477,7 +489,24 @@ class Identification extends Component {
                   >
                     <Typography>Population</Typography>
                   </AccordionSummary>
-                  <AccordionDetails></AccordionDetails>
+                  <AccordionDetails>
+                    <div className="Identification-Population">
+                      <Typography>
+                        Population Trend: {this.state.display.population.trend}
+                      </Typography>
+                      <Timeline>
+                        {this.state.display.population.timeline.map((year) => (
+                          <TimelineItem>
+                            <TimelineSeparator>
+                              <Avatar variant="square">{year.year}</Avatar>
+                              <TimelineConnector />
+                            </TimelineSeparator>
+                            <TimelineContent>{year.category}</TimelineContent>
+                          </TimelineItem>
+                        ))}
+                      </Timeline>
+                    </div>
+                  </AccordionDetails>
                 </Accordion>
 
                 <Accordion
