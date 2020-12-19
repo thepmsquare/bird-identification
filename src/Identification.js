@@ -8,6 +8,7 @@ import axios from "axios";
 import APItoken from "./IUCNToken";
 import imageModelIDs from "./imageModelIDs.json";
 import AudioPlayer from "material-ui-audio-player";
+import fetchJsonp from "fetch-jsonp";
 // material
 import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
@@ -312,12 +313,31 @@ class Identification extends Component {
     display.audioURL = allBirdsWithCommonNames.find(
       (bird) => bird.id === birdID
     ).soundUrl;
-    this.setState(() => {
-      return {
-        display,
-        showingResults: true,
-      };
-    });
+    fetchJsonp(
+      "https://en.wikipedia.org/w/api.php?format=json&action=query&titles=" +
+        individualSpeciesByID.data.result[0].main_common_name.toLowerCase() +
+        "&prop=pageimages&piprop=original"
+    )
+      .then((response) => {
+        return response.json();
+      })
+      .then((json) => {
+        console.log(
+          "https://en.wikipedia.org/w/api.php?format=json&action=query&titles=" +
+            individualSpeciesByID.data.result[0].main_common_name.toLowerCase() +
+            "&prop=pageimages&piprop=original"
+        );
+        console.log(json.query.pages);
+        if (Object.values(json.query.pages)[0].original) {
+          display.imageURL = Object.values(json.query.pages)[0].original.source;
+        }
+        this.setState(() => {
+          return {
+            display,
+            showingResults: true,
+          };
+        });
+      });
   };
 
   handleAccordianToggle = (name) => {
@@ -418,7 +438,14 @@ class Identification extends Component {
                     : ""
                 }
               />
-              <CardMedia image={placeholder} style={{ paddingTop: "56.25%" }} />
+              <CardMedia
+                image={
+                  this.state.display.imageURL
+                    ? this.state.display.imageURL
+                    : placeholder
+                }
+                style={{ paddingTop: "56.25%", backgroundSize: "contain" }}
+              />
               {this.state.display.audioURL && (
                 <CardContent>
                   <AudioPlayer
