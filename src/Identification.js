@@ -309,6 +309,9 @@ class Identification extends Component {
       };
     });
     display.actions = actionsByID.data.result.map((action) => action.title);
+    display.audioURL = allBirdsWithCommonNames.find(
+      (bird) => bird.id === birdID
+    ).soundUrl;
     this.setState(() => {
       return {
         display,
@@ -416,12 +419,13 @@ class Identification extends Component {
                 }
               />
               <CardMedia image={placeholder} style={{ paddingTop: "56.25%" }} />
-              {true && (
+              {this.state.display.audioURL && (
                 <CardContent>
                   <AudioPlayer
-                    src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
+                    src={`https:${this.state.display.audioURL}`}
                     volume={false}
                     width="inital"
+                    variation="primary"
                   />
                 </CardContent>
               )}
