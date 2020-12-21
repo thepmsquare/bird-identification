@@ -6,12 +6,6 @@
   justify-content: center;
   gap: 1rem;
 }
-.Identification-Taxonomy {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  text-align: start;
-  width: 100%;
-}
 .Identification-GeographicRange {
   width: 100%;
   display: flex;
@@ -25,13 +19,4 @@
 }
 .MuiAvatar-root {
   font-size: 1rem !important;
-}
-.Identification-HabitatAndEcology,
-.Identification-Threats,
-.Identification-ConservationActions {
-  text-align: start;
-}
-.Identification-ThreatsRow {
-  display: grid;
-  grid-template-columns: 3fr 1fr 2fr;
 }

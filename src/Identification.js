@@ -37,6 +37,11 @@ import TimelineContent from "@material-ui/lab/TimelineContent";
 import Avatar from "@material-ui/core/Avatar";
 import Backdrop from "@material-ui/core/Backdrop";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import Table from "@material-ui/core/Table";
+import TableBody from "@material-ui/core/TableBody";
+import TableCell from "@material-ui/core/TableCell";
+import TableContainer from "@material-ui/core/TableContainer";
+import TableRow from "@material-ui/core/TableRow";
 // material icons
 import SearchIcon from "@material-ui/icons/Search";
 import PhotoCameraIcon from "@material-ui/icons/PhotoCamera";
@@ -403,7 +408,11 @@ class Identification extends Component {
       return { snackbarOpen: false, snackbarMessage: "" };
     });
   };
-
+  toTitleCase = (str) => {
+    return str.replace(/\w\S*/g, (txt) => {
+      return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+    });
+  };
   render = () => {
     return (
       <div className="Identification">
@@ -512,42 +521,68 @@ class Identification extends Component {
                     <Typography>Taxonomy</Typography>
                   </AccordionSummary>
                   <AccordionDetails>
-                    <div className="Identification-Taxonomy">
-                      <Typography>Scientific Name</Typography>
-                      <Typography>
-                        {this.state.display.taxonomy.scientific_name}
-                      </Typography>
-
-                      <Typography>Kingdom</Typography>
-                      <Typography>
-                        {this.state.display.taxonomy.kingdom}
-                      </Typography>
-
-                      <Typography>Phylum</Typography>
-                      <Typography>
-                        {this.state.display.taxonomy.phylum}
-                      </Typography>
-
-                      <Typography>Class</Typography>
-                      <Typography>
-                        {this.state.display.taxonomy.class}
-                      </Typography>
-
-                      <Typography>Order</Typography>
-                      <Typography>
-                        {this.state.display.taxonomy.order}
-                      </Typography>
-
-                      <Typography>Family</Typography>
-                      <Typography>
-                        {this.state.display.taxonomy.family}
-                      </Typography>
-
-                      <Typography>Genus</Typography>
-                      <Typography>
-                        {this.state.display.taxonomy.genus}
-                      </Typography>
-                    </div>
+                    <TableContainer>
+                      <Table>
+                        <TableBody>
+                          <TableRow>
+                            <TableCell>Scientific Name</TableCell>
+                            <TableCell>
+                              {this.toTitleCase(
+                                this.state.display.taxonomy.scientific_name
+                              )}
+                            </TableCell>
+                          </TableRow>
+                          <TableRow>
+                            <TableCell>Kingdom</TableCell>
+                            <TableCell>
+                              {this.toTitleCase(
+                                this.state.display.taxonomy.kingdom
+                              )}
+                            </TableCell>
+                          </TableRow>
+                          <TableRow>
+                            <TableCell>Phylum</TableCell>
+                            <TableCell>
+                              {this.toTitleCase(
+                                this.state.display.taxonomy.phylum
+                              )}
+                            </TableCell>
+                          </TableRow>
+                          <TableRow>
+                            <TableCell>Class</TableCell>
+                            <TableCell>
+                              {this.toTitleCase(
+                                this.state.display.taxonomy.class
+                              )}
+                            </TableCell>
+                          </TableRow>
+                          <TableRow>
+                            <TableCell>Order</TableCell>
+                            <TableCell>
+                              {this.toTitleCase(
+                                this.state.display.taxonomy.order
+                              )}
+                            </TableCell>
+                          </TableRow>
+                          <TableRow>
+                            <TableCell>Family</TableCell>
+                            <TableCell>
+                              {this.toTitleCase(
+                                this.state.display.taxonomy.family
+                              )}
+                            </TableCell>
+                          </TableRow>
+                          <TableRow>
+                            <TableCell>Genus</TableCell>
+                            <TableCell>
+                              {this.toTitleCase(
+                                this.state.display.taxonomy.genus
+                              )}
+                            </TableCell>
+                          </TableRow>
+                        </TableBody>
+                      </Table>
+                    </TableContainer>
                   </AccordionDetails>
                 </Accordion>
 
@@ -596,7 +631,7 @@ class Identification extends Component {
                       <Typography>
                         Population Trend: {this.state.display.population.trend}
                       </Typography>
-                      <Timeline>
+                      <Timeline align="alternate">
                         {this.state.display.population.timeline.map((year) => (
                           <TimelineItem key={year.year}>
                             <TimelineSeparator>
@@ -627,11 +662,17 @@ class Identification extends Component {
                     <Typography>Habitat and Ecology</Typography>
                   </AccordionSummary>
                   <AccordionDetails>
-                    <div className="Identification-HabitatAndEcology">
-                      {this.state.display.habitats.map((habitat, index) => (
-                        <Typography key={index}>{habitat}</Typography>
-                      ))}
-                    </div>
+                    <TableContainer>
+                      <Table>
+                        <TableBody>
+                          {this.state.display.habitats.map((habitat, index) => (
+                            <TableRow key={index}>
+                              <TableCell>{habitat}</TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </TableContainer>
                   </AccordionDetails>
                 </Accordion>
 
@@ -650,18 +691,19 @@ class Identification extends Component {
                       <Typography>Threats</Typography>
                     </AccordionSummary>
                     <AccordionDetails>
-                      <div className="Identification-Threats">
-                        {this.state.display.threats.map((threat, index) => (
-                          <div
-                            key={index}
-                            className="Identification-ThreatsRow"
-                          >
-                            <Typography>{threat.title}</Typography>
-                            <Typography>{threat.timing}</Typography>
-                            <Typography>{threat.score}</Typography>
-                          </div>
-                        ))}
-                      </div>
+                      <TableContainer>
+                        <Table>
+                          <TableBody>
+                            {this.state.display.threats.map((threat, index) => (
+                              <TableRow key={index}>
+                                <TableCell>{threat.title}</TableCell>
+                                <TableCell>{threat.timing}</TableCell>
+                                <TableCell>{threat.score}</TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </TableContainer>
                     </AccordionDetails>
                   </Accordion>
                 )}
@@ -683,11 +725,17 @@ class Identification extends Component {
                       <Typography>Conservation Actions</Typography>
                     </AccordionSummary>
                     <AccordionDetails>
-                      <div className="Identification-ConservationActions">
-                        {this.state.display.actions.map((action, index) => (
-                          <Typography key={index}>{action}</Typography>
-                        ))}
-                      </div>
+                      <TableContainer>
+                        <Table>
+                          <TableBody>
+                            {this.state.display.actions.map((action, index) => (
+                              <TableRow key={index}>
+                                <TableCell>{action}</TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </TableContainer>
                     </AccordionDetails>
                   </Accordion>
                 )}
