@@ -460,7 +460,7 @@ class Identification extends Component {
             renderOption={(option) => <Typography noWrap>{option}</Typography>}
           />
         </form>
-        <Backdrop open={this.state.isLoading}>
+        <Backdrop open={this.state.isLoading} style={{ zIndex: 10 }}>
           <CircularProgress color="inherit" />
         </Backdrop>
         {!this.state.showingResults && (
