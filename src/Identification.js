@@ -35,6 +35,8 @@ import TimelineSeparator from "@material-ui/lab/TimelineSeparator";
 import TimelineConnector from "@material-ui/lab/TimelineConnector";
 import TimelineContent from "@material-ui/lab/TimelineContent";
 import Avatar from "@material-ui/core/Avatar";
+import Backdrop from "@material-ui/core/Backdrop";
+import CircularProgress from "@material-ui/core/CircularProgress";
 // material icons
 import SearchIcon from "@material-ui/icons/Search";
 import PhotoCameraIcon from "@material-ui/icons/PhotoCamera";
@@ -133,7 +135,7 @@ class Identification extends Component {
       searchInputValue: "",
       showingResults: false,
       display: {},
-      predictedResult: {},
+      isLoading: false,
       snackbarOpen: false,
       snackbarMessage: "",
       accordions: [
@@ -180,11 +182,17 @@ class Identification extends Component {
   handleSearchSubmit = (e) => {
     e.preventDefault();
     if (this.state.searchValue) {
-      let birdID = allBirdsWithCommonNames.find((ele) => {
-        return ele.commonNames.includes(this.state.searchValue);
-      }).id;
-      this.handleCloseResults();
-      this.fetchDetailsFromAPI(birdID);
+      this.setState(
+        () => {
+          return { isLoading: true, showingResults: false, display: {} };
+        },
+        () => {
+          let birdID = allBirdsWithCommonNames.find((ele) => {
+            return ele.commonNames.includes(this.state.searchValue);
+          }).id;
+          this.fetchDetailsFromAPI(birdID);
+        }
+      );
     } else {
       this.setState(() => {
         return {
@@ -218,126 +226,157 @@ class Identification extends Component {
     });
   };
 
-  handleImageSubmit = async () => {
-    const URL = "https://teachablemachine.withgoogle.com/models/-7mqg1t6m/";
-    const modelURL = URL + "model.json";
-    const metadataURL = URL + "metadata.json";
-    const model = await tmImage.load(modelURL, metadataURL);
-    const allPredictions = await model.predict(this.selectedImageHTML, false);
-    const sortedPredictions = allPredictions.sort(
-      (element1, element2) => element2.probability - element1.probability
+  handleImageSubmit = () => {
+    this.setState(
+      () => {
+        return {
+          isLoading: true,
+          showingResults: false,
+          display: {},
+        };
+      },
+      async () => {
+        const URL = "https://teachablemachine.withgoogle.com/models/-7mqg1t6m/";
+        const modelURL = URL + "model.json";
+        const metadataURL = URL + "metadata.json";
+
+        try {
+          const model = await tmImage.load(modelURL, metadataURL);
+          const allPredictions = await model.predict(
+            this.selectedImageHTML,
+            false
+          );
+          const sortedPredictions = allPredictions.sort(
+            (element1, element2) => element2.probability - element1.probability
+          );
+          this.findBirdIDFromImage(sortedPredictions[0]);
+        } catch (error) {
+          this.setState(() => {
+            return {
+              isLoading: false,
+              snackbarMessage: "Error in Identification",
+              snackbarOpen: true,
+            };
+          });
+        }
+      }
     );
-    this.findBirdIDFromImage(sortedPredictions[0]);
   };
 
   findBirdIDFromImage = (prediction) => {
     let birdID = imageModelIDs.find((ele) => {
       return ele.bird === prediction.className;
     }).id;
-    this.handleCloseResults();
     this.fetchDetailsFromAPI(birdID, prediction);
   };
 
   fetchDetailsFromAPI = async (birdID, prediction) => {
-    let display = {};
-    if (prediction) {
-      display.prediction = prediction;
-    }
-    const individualSpeciesByID = await axios.get(
-      "https://apiv3.iucnredlist.org/api/v3/species/id/" +
-        birdID +
-        "?token=" +
-        APItoken
-    );
-    const countryOccuranceByID = await axios.get(
-      "https://apiv3.iucnredlist.org/api/v3/species/countries/id/" +
-        birdID +
-        "?token=" +
-        APItoken
-    );
-    const historicalAssessmentsByID = await axios.get(
-      "https://apiv3.iucnredlist.org/api/v3/species/history/id/" +
-        birdID +
-        "?token=" +
-        APItoken
-    );
-    const habitatsByID = await axios.get(
-      "https://apiv3.iucnredlist.org/api/v3/habitats/species/id/" +
-        birdID +
-        "?token=" +
-        APItoken
-    );
-    const threatsByID = await axios.get(
-      "https://apiv3.iucnredlist.org/api/v3/threats/species/id/" +
-        birdID +
-        "?token=" +
-        APItoken
-    );
-    const actionsByID = await axios.get(
-      "https://apiv3.iucnredlist.org/api/v3/measures/species/id/" +
-        birdID +
-        "?token=" +
-        APItoken
-    );
+    try {
+      let display = {};
+      if (prediction) {
+        display.prediction = prediction;
+      }
+      const individualSpeciesByID = await axios.get(
+        "https://apiv3.iucnredlist.org/api/v3/species/id/" +
+          birdID +
+          "?token=" +
+          APItoken
+      );
+      const countryOccuranceByID = await axios.get(
+        "https://apiv3.iucnredlist.org/api/v3/species/countries/id/" +
+          birdID +
+          "?token=" +
+          APItoken
+      );
+      const historicalAssessmentsByID = await axios.get(
+        "https://apiv3.iucnredlist.org/api/v3/species/history/id/" +
+          birdID +
+          "?token=" +
+          APItoken
+      );
+      const habitatsByID = await axios.get(
+        "https://apiv3.iucnredlist.org/api/v3/habitats/species/id/" +
+          birdID +
+          "?token=" +
+          APItoken
+      );
+      const threatsByID = await axios.get(
+        "https://apiv3.iucnredlist.org/api/v3/threats/species/id/" +
+          birdID +
+          "?token=" +
+          APItoken
+      );
+      const actionsByID = await axios.get(
+        "https://apiv3.iucnredlist.org/api/v3/measures/species/id/" +
+          birdID +
+          "?token=" +
+          APItoken
+      );
 
-    display.title = individualSpeciesByID.data.result[0].main_common_name;
-    display.taxonomy = {
-      class: individualSpeciesByID.data.result[0].class,
-      family: individualSpeciesByID.data.result[0].family,
-      genus: individualSpeciesByID.data.result[0].genus,
-      kingdom: individualSpeciesByID.data.result[0].kingdom,
-      order: individualSpeciesByID.data.result[0].order,
-      phylum: individualSpeciesByID.data.result[0].phylum,
-      scientific_name: individualSpeciesByID.data.result[0].scientific_name,
-    };
-    display.geographicRange = countryOccuranceByID.data.result.map((ele) => {
-      return { country: ele.code, value: Math.random() };
-    });
-    display.population = {
-      trend: individualSpeciesByID.data.result[0].population_trend,
-      timeline: JSON.parse(
-        JSON.stringify(historicalAssessmentsByID.data.result)
-      ),
-    };
-    display.habitats = habitatsByID.data.result.map(
-      (habitat) => habitat.habitat
-    );
-    display.threats = threatsByID.data.result.map((threat) => {
-      return {
-        title: threat.title,
-        timing: threat.timing,
-        score: threat.score,
+      display.title = individualSpeciesByID.data.result[0].main_common_name;
+      display.taxonomy = {
+        class: individualSpeciesByID.data.result[0].class,
+        family: individualSpeciesByID.data.result[0].family,
+        genus: individualSpeciesByID.data.result[0].genus,
+        kingdom: individualSpeciesByID.data.result[0].kingdom,
+        order: individualSpeciesByID.data.result[0].order,
+        phylum: individualSpeciesByID.data.result[0].phylum,
+        scientific_name: individualSpeciesByID.data.result[0].scientific_name,
       };
-    });
-    display.actions = actionsByID.data.result.map((action) => action.title);
-    display.audioURL = allBirdsWithCommonNames.find(
-      (bird) => bird.id === birdID
-    ).soundUrl;
-    fetchJsonp(
-      "https://en.wikipedia.org/w/api.php?format=json&action=query&titles=" +
-        individualSpeciesByID.data.result[0].main_common_name.toLowerCase() +
-        "&prop=pageimages&piprop=original"
-    )
-      .then((response) => {
-        return response.json();
-      })
-      .then((json) => {
-        console.log(
-          "https://en.wikipedia.org/w/api.php?format=json&action=query&titles=" +
-            individualSpeciesByID.data.result[0].main_common_name.toLowerCase() +
-            "&prop=pageimages&piprop=original"
-        );
-        console.log(json.query.pages);
-        if (Object.values(json.query.pages)[0].original) {
-          display.imageURL = Object.values(json.query.pages)[0].original.source;
-        }
-        this.setState(() => {
-          return {
-            display,
-            showingResults: true,
-          };
-        });
+      display.geographicRange = countryOccuranceByID.data.result.map((ele) => {
+        return { country: ele.code, value: Math.random() };
       });
+      display.population = {
+        trend: individualSpeciesByID.data.result[0].population_trend,
+        timeline: JSON.parse(
+          JSON.stringify(historicalAssessmentsByID.data.result)
+        ),
+      };
+      display.habitats = habitatsByID.data.result.map(
+        (habitat) => habitat.habitat
+      );
+      display.threats = threatsByID.data.result.map((threat) => {
+        return {
+          title: threat.title,
+          timing: threat.timing,
+          score: threat.score,
+        };
+      });
+      display.actions = actionsByID.data.result.map((action) => action.title);
+      display.audioURL = allBirdsWithCommonNames.find(
+        (bird) => bird.id === birdID
+      ).soundUrl;
+      fetchJsonp(
+        "https://en.wikipedia.org/w/api.php?format=json&action=query&titles=" +
+          individualSpeciesByID.data.result[0].main_common_name.toLowerCase() +
+          "&prop=pageimages&piprop=original"
+      )
+        .then((response) => {
+          return response.json();
+        })
+        .then((json) => {
+          if (Object.values(json.query.pages)[0].original) {
+            display.imageURL = Object.values(
+              json.query.pages
+            )[0].original.source;
+          }
+          this.setState(() => {
+            return {
+              display,
+              showingResults: true,
+              isLoading: false,
+            };
+          });
+        });
+    } catch (error) {
+      this.setState(() => {
+        return {
+          isLoading: false,
+          snackbarMessage: "Error in Fetching Details",
+          snackbarOpen: true,
+        };
+      });
+    }
   };
 
   handleAccordianToggle = (name) => {
@@ -361,7 +400,7 @@ class Identification extends Component {
 
   handleSnackbarClose = () => {
     this.setState(() => {
-      return { snackbarOpen: false };
+      return { snackbarOpen: false, snackbarMessage: "" };
     });
   };
 
@@ -412,6 +451,9 @@ class Identification extends Component {
             renderOption={(option) => <Typography noWrap>{option}</Typography>}
           />
         </form>
+        <Backdrop open={this.state.isLoading}>
+          <CircularProgress color="inherit" />
+        </Backdrop>
         {!this.state.showingResults && (
           <div className="Identification-Links">
             <Typography>Location-Wise Search</Typography>
