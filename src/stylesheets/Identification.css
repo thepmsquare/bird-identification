@@ -20,3 +20,7 @@
 .MuiAvatar-root {
   font-size: 1rem !important;
 }
+
+.MuiAccordionDetails-root {
+  padding: 0px 0px 0px !important;
+}
