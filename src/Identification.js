@@ -408,11 +408,13 @@ class Identification extends Component {
       return { snackbarOpen: false, snackbarMessage: "" };
     });
   };
+
   toTitleCase = (str) => {
     return str.replace(/\w\S*/g, (txt) => {
       return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
     });
   };
+
   render = () => {
     return (
       <div className="Identification">
@@ -461,7 +463,7 @@ class Identification extends Component {
           />
         </form>
         <Backdrop open={this.state.isLoading} style={{ zIndex: 10 }}>
-          <CircularProgress color="inherit" />
+          {this.state.isLoading && <CircularProgress color="inherit" />}
         </Backdrop>
         {!this.state.showingResults && (
           <div className="Identification-Links">
@@ -504,6 +506,7 @@ class Identification extends Component {
                     volume={false}
                     width="inital"
                     variation="primary"
+                    type="audio/mpeg"
                   />
                 </CardContent>
               )}
@@ -606,8 +609,15 @@ class Identification extends Component {
                       <WorldMap
                         color="#1976d2"
                         data={this.state.display.geographicRange}
-                        frame
                         tooltipTextFunction={(countryName) => countryName}
+                        strokeOpacity="100%"
+                        size={
+                          window.innerWidth >= 768
+                            ? window.innerWidth >= 1920
+                              ? "lg"
+                              : "md"
+                            : "sm"
+                        }
                       />
                     </div>
                   </AccordionDetails>
