@@ -465,16 +465,16 @@ class Identification extends Component {
         </Backdrop>
         {!this.state.showingResults && (
           <div className="Identification-Links">
-            <Link to="/locations">
+            <Link to="/bird-identification/locations">
               <Typography>Location-Wise Search</Typography>
             </Link>
-            <Link to="/endangered">
+            <Link to="/bird-identification/endangered">
               <Typography>Endangered Birds</Typography>
             </Link>
-            <Link to="/">
+            <Link to="/bird-identification">
               <Typography>Featured bird: White-headed Duck</Typography>
             </Link>
-            <Link to="/credits">
+            <Link to="/bird-identification/credits">
               <Typography>Credits</Typography>
             </Link>
           </div>

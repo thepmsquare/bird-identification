@@ -11,19 +11,19 @@ class App extends Component {
     return (
       <div className="App">
         <Switch>
-          <Route exact path="/">
+          <Route exact path="/bird-identification">
             <Identification />
           </Route>
-          <Route exact path="/locations">
+          <Route exact path="/bird-identification/locations">
             <IdentificationByLocation />
           </Route>
-          <Route exact path="/endangered">
+          <Route exact path="/bird-identification/endangered">
             <IdentificationByEndangeredSpecies />
           </Route>
-          <Route exact path="/credits">
+          <Route exact path="/bird-identification/credits">
             <Credits />
           </Route>
-          <Route path="*">
+          <Route path="/bird-identification/*">
             <Identification />
           </Route>
         </Switch>
