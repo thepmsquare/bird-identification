@@ -50,6 +50,7 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import { WorldMap } from "react-svg-worldmap";
 // css
 import "./stylesheets/Identification.css";
+import { Link } from "react-router-dom";
 
 //copy pasted from mui website to virtualize dropdown
 const LISTBOX_PADDING = 8; // px
@@ -464,9 +465,18 @@ class Identification extends Component {
         </Backdrop>
         {!this.state.showingResults && (
           <div className="Identification-Links">
-            <Typography>Location-Wise Search</Typography>
-            <Typography>Endangered Birds</Typography>
-            <Typography>Featured bird: White-headed Duck</Typography>
+            <Link to="/locations">
+              <Typography>Location-Wise Search</Typography>
+            </Link>
+            <Link to="/endangered">
+              <Typography>Endangered Birds</Typography>
+            </Link>
+            <Link to="/">
+              <Typography>Featured bird: White-headed Duck</Typography>
+            </Link>
+            <Link to="/credits">
+              <Typography>Credits</Typography>
+            </Link>
           </div>
         )}
         {this.state.showingResults && (
