@@ -44,7 +44,7 @@ import "./stylesheets/IdentificationByEndangeredSpecies.css";
 class IdentificationByEndangeredSpecies extends Component {
   render = () => {
     return (
-      <div class="IdentificationByEndangeredSpecies">
+      <div className="IdentificationByEndangeredSpecies">
         <h1>IdentificationByEndangeredSpecies</h1>
       </div>
     );

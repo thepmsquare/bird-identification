@@ -155,6 +155,10 @@ class Identification extends Component {
     this.loadUniqueCommonNames();
   }
 
+  componentDidMount = () => {
+    if (this.props.id) this.searchforThisBird(this.props.id);
+  };
+
   loadUniqueCommonNames = () => {
     this.allCommonNames = [];
     allBirdsWithCommonNames.forEach((bird) => {
@@ -411,6 +415,18 @@ class Identification extends Component {
     return str.replace(/\w\S*/g, (txt) => {
       return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
     });
+  };
+
+  searchforThisBird = (id) => {
+    this.setState(
+      () => {
+        return { isLoading: true, showingResults: false, display: {} };
+      },
+      () => {
+        this.fetchDetailsFromAPI(this.props.id);
+        this.props.changeId(null);
+      }
+    );
   };
 
   render = () => {
