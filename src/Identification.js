@@ -32,7 +32,6 @@ import ListSubheader from "@material-ui/core/ListSubheader";
 import Timeline from "@material-ui/lab/Timeline";
 import TimelineItem from "@material-ui/lab/TimelineItem";
 import TimelineSeparator from "@material-ui/lab/TimelineSeparator";
-import TimelineConnector from "@material-ui/lab/TimelineConnector";
 import TimelineContent from "@material-ui/lab/TimelineContent";
 import Avatar from "@material-ui/core/Avatar";
 import Backdrop from "@material-ui/core/Backdrop";
@@ -351,28 +350,26 @@ class Identification extends Component {
       display.audioURL = allBirdsWithCommonNames.find(
         (bird) => bird.id === birdID
       ).soundUrl;
-      fetchJsonp(
+      let wikiJsonpResponse = await fetchJsonp(
         "https://en.wikipedia.org/w/api.php?format=json&action=query&titles=" +
-          individualSpeciesByID.data.result[0].main_common_name.toLowerCase() +
-          "&prop=pageimages&piprop=original"
-      )
-        .then((response) => {
-          return response.json();
-        })
-        .then((json) => {
-          if (Object.values(json.query.pages)[0].original) {
-            display.imageURL = Object.values(
-              json.query.pages
-            )[0].original.source;
-          }
-          this.setState(() => {
-            return {
-              display,
-              showingResults: true,
-              isLoading: false,
-            };
-          });
-        });
+          individualSpeciesByID.data.result[0].scientific_name +
+          "&prop=pageimages&piprop=original&redirects=true"
+      );
+
+      let parsedJson = await wikiJsonpResponse.json();
+
+      if (Object.values(parsedJson.query.pages)[0].original) {
+        display.imageURL = Object.values(
+          parsedJson.query.pages
+        )[0].original.source;
+      }
+      this.setState(() => {
+        return {
+          display,
+          showingResults: true,
+          isLoading: false,
+        };
+      });
     } catch (error) {
       this.setState(() => {
         return {
@@ -646,9 +643,10 @@ class Identification extends Component {
                           <TimelineItem key={year.year}>
                             <TimelineSeparator>
                               <Avatar variant="square">{year.year}</Avatar>
-                              <TimelineConnector />
                             </TimelineSeparator>
-                            <TimelineContent>{year.category}</TimelineContent>
+                            <TimelineContent>
+                              <Typography>{year.category}</Typography>
+                            </TimelineContent>
                           </TimelineItem>
                         ))}
                       </Timeline>

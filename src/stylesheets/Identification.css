@@ -18,7 +18,11 @@
 .MuiAvatar-root {
   font-size: 1rem !important;
 }
-
-.MuiAccordionDetails-root {
-  padding: 0px 0px 0px !important;
+.MuiTimelineItem-root {
+  display: grid;
+  grid-template-columns: 33% 33% 33%;
+  align-items: center;
+}
+.MuiTimelineContent-root {
+  overflow: auto;
 }
