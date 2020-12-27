@@ -22,7 +22,8 @@
     "react-router-dom": "^5.2.0",
     "react-scripts": "^4.0.1",
     "react-svg-worldmap": "^1.0.39",
-    "react-window": "^1.8.6"
+    "react-window": "^1.8.6",
+    "web-vitals": "^0.2.4"
   },
   "scripts": {
     "predeploy": "npm run build",
