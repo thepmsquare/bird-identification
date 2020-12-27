@@ -1,51 +1,62 @@
 import React, { Component } from "react";
-import placeholder from "./placeholder.jpg";
-import axios from "axios";
-import APItoken from "./IUCNToken";
-import AudioPlayer from "material-ui-audio-player";
-import fetchJsonp from "fetch-jsonp";
+import { Link } from "react-router-dom";
 // material
-import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
-import InputAdornment from "@material-ui/core/InputAdornment";
-import IconButton from "@material-ui/core/IconButton";
 import Button from "@material-ui/core/Button";
-import Snackbar from "@material-ui/core/Snackbar";
-import Slide from "@material-ui/core/Slide";
-import Card from "@material-ui/core/Card";
-import CardHeader from "@material-ui/core/CardHeader";
-import CardMedia from "@material-ui/core/CardMedia";
-import CardContent from "@material-ui/core/CardContent";
-import CardActions from "@material-ui/core/CardActions";
-import Accordion from "@material-ui/core/Accordion";
-import AccordionSummary from "@material-ui/core/AccordionSummary";
-import AccordionDetails from "@material-ui/core/AccordionDetails";
-import Timeline from "@material-ui/lab/Timeline";
-import TimelineItem from "@material-ui/lab/TimelineItem";
-import TimelineSeparator from "@material-ui/lab/TimelineSeparator";
-import TimelineContent from "@material-ui/lab/TimelineContent";
-import Avatar from "@material-ui/core/Avatar";
-import Backdrop from "@material-ui/core/Backdrop";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import Table from "@material-ui/core/Table";
-import TableBody from "@material-ui/core/TableBody";
-import TableCell from "@material-ui/core/TableCell";
-import TableContainer from "@material-ui/core/TableContainer";
-import TableRow from "@material-ui/core/TableRow";
-// material icons
-import SearchIcon from "@material-ui/icons/Search";
-import PhotoCameraIcon from "@material-ui/icons/PhotoCamera";
-import CloseIcon from "@material-ui/icons/Close";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-// map
-import { WorldMap } from "react-svg-worldmap";
 // css
 import "./stylesheets/Credits.css";
+
 class Credits extends Component {
   render = () => {
     return (
       <div className="Credits">
-        <h1>Credits</h1>
+        <Typography component="h1" variant="h2" className="Credits-Heading">
+          Credits
+        </Typography>
+        <Typography>
+          Bird Identification Model of 225 birds is Trained with the help of{" "}
+          <a href="https://teachablemachine.withgoogle.com/">
+            Teachable Machine
+          </a>
+          .
+        </Typography>
+        <Typography>
+          <a href="https://www.kaggle.com/gpiosenka/100-bird-species">
+            Image Dataset from Kaggle
+          </a>{" "}
+          is used for Training the model.
+        </Typography>
+        <Typography>
+          <a href="https://apiv3.iucnredlist.org/">IUCN Red List API</a> is used
+          to fetch information about birds.
+        </Typography>
+        <Typography>
+          <a href="https://www.xeno-canto.org/explore/api">Xeno-canto API</a> is
+          used on backend to fetch audio recordings of birds.
+        </Typography>
+        <Typography>
+          <a href="https://www.mediawiki.org/wiki/API:Main_page">
+            English Wikipedia API
+          </a>{" "}
+          is used to fetch images of birds.
+        </Typography>
+        <Typography>
+          Contributions to{" "}
+          <a href="https://www.xeno-canto.org/upload">Xeno-canto</a> by
+          uploading audio recordings of birds and to{" "}
+          <a href="https://en.wikipedia.org/wiki/Help:Editing">Wikipedia</a> by
+          correcting information and uploading missing photos of birds are
+          greatly encouraged.
+        </Typography>
+        <Typography>
+          Made by <a href="mailto:kajolachhra123@gmail.com">Kajol Achhra</a>,{" "}
+          <a href="mailto:2017.priyanka.ahuja@ves.ac.in">Priyanka Ahuja</a>,{" "}
+          <a href="mailto:2017.pooja.kamrani@ves.ac.in">Pooja Kamrani</a> and{" "}
+          <a href="https://thepmsquare.me/">Parth Mangtani</a>.
+        </Typography>
+        <Link to="/bird-identification">
+          <Button>Back</Button>
+        </Link>
       </div>
     );
   };

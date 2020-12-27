@@ -1,0 +1,14 @@
+.Credits {
+  min-height: 100vh;
+  max-width: 86vw;
+  padding: 0 2vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1rem;
+  background-color: #ffffff;
+}
+.Credits-Heading {
+  font-size: 3.5rem !important;
+  overflow: auto;
+}
