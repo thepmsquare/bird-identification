@@ -151,11 +151,17 @@ class Identification extends Component {
         { name: "Threats", isOpen: true },
         { name: "Conservation Actions", isOpen: true },
       ],
+      featuredBird:
+        allBirdsWithCommonNames[
+          this.props.featuredBird % allBirdsWithCommonNames.length
+        ],
     };
     this.loadUniqueCommonNames();
   }
-
   componentDidMount = () => {
+    if (this.props.name) this.searchforThisBird(this.props.name);
+  };
+  componentDidUpdate = () => {
     if (this.props.name) this.searchforThisBird(this.props.name);
   };
 
@@ -375,6 +381,14 @@ class Identification extends Component {
           display,
           showingResults: true,
           isLoading: false,
+          accordions: [
+            { name: "Taxonomy", isOpen: true },
+            { name: "Geographic Range", isOpen: true },
+            { name: "Population", isOpen: true },
+            { name: "Habitat and Ecology", isOpen: true },
+            { name: "Threats", isOpen: true },
+            { name: "Conservation Actions", isOpen: true },
+          ],
         };
       });
     } catch (error) {
@@ -434,7 +448,11 @@ class Identification extends Component {
   render = () => {
     return (
       <div className="Identification">
-        <Typography component="h1" variant="h2">
+        <Typography
+          component="h1"
+          variant="h2"
+          className="Identification-Heading"
+        >
           Bird Identification
         </Typography>
 
@@ -484,16 +502,18 @@ class Identification extends Component {
         {!this.state.showingResults && (
           <div className="Identification-Links">
             <Link to="/bird-identification/locations">
-              <Typography>Location-Wise Search</Typography>
+              <Button>Location-Wise Search</Button>
             </Link>
-            <Link to="/bird-identification/endangered">
-              <Typography>Endangered Birds</Typography>
-            </Link>
-            <Link to="/bird-identification">
-              <Typography>Featured bird: White-headed Duck</Typography>
-            </Link>
+            <Button
+              onClick={() => {
+                this.props.changeName(this.state.featuredBird.name);
+              }}
+            >
+              Featured bird: {this.state.featuredBird.commonNames[0]}
+            </Button>
+
             <Link to="/bird-identification/credits">
-              <Typography>Credits</Typography>
+              <Button>Credits</Button>
             </Link>
           </div>
         )}

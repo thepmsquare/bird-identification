@@ -49,6 +49,10 @@ class IdentificationByLocation extends Component {
       showingResults: false,
       display: {},
       isLoading: false,
+      featuredBird:
+        allBirdsWithCommonNames[
+          this.props.featuredBird % allBirdsWithCommonNames.length
+        ],
     };
     this.loadAllCountries();
   }
@@ -194,15 +198,14 @@ class IdentificationByLocation extends Component {
     });
   };
 
-  handleBirdSearch = (name) => {
-    this.props.changeName(name);
-    this.props.history.push("/bird-identification");
-  };
-
   render = () => {
     return (
       <div className="IdentificationByLocation">
-        <Typography component="h1" variant="h2">
+        <Typography
+          component="h1"
+          variant="h2"
+          className="IdentificationByLocation-Heading"
+        >
           Bird Identification
         </Typography>
         <form noValidate autoComplete="off" onSubmit={this.handleSearchSubmit}>
@@ -279,18 +282,19 @@ class IdentificationByLocation extends Component {
           {this.state.isLoading && <CircularProgress color="inherit" />}
         </Backdrop>
         {!this.state.showingResults && (
-          <div className="Identification-Links">
+          <div className="IdentificationByLocation-Links">
             <Link to="/bird-identification">
-              <Typography>Search by Name</Typography>
+              <Button>Search by Name</Button>
             </Link>
-            <Link to="/bird-identification/endangered">
-              <Typography>Endangered Birds</Typography>
-            </Link>
-            <Link to="/bird-identification">
-              <Typography>Featured bird: White-headed Duck</Typography>
-            </Link>
+            <Button
+              onClick={() => {
+                this.props.changeName(this.state.featuredBird.name);
+              }}
+            >
+              Featured bird: {this.state.featuredBird.commonNames[0]}
+            </Button>
             <Link to="/bird-identification/credits">
-              <Typography>Credits</Typography>
+              <Button>Credits</Button>
             </Link>
           </div>
         )}
@@ -300,7 +304,7 @@ class IdentificationByLocation extends Component {
             in={this.state.showingResults}
             mountOnEnter
             unmountOnExit
-            className="Identification-Results"
+            className="IdentificationByLocation-Results"
           >
             <Card elevation={4}>
               <CardHeader title={`${this.state.display.country}`} />
@@ -310,7 +314,7 @@ class IdentificationByLocation extends Component {
                   return (
                     <TableContainer
                       key={category.category}
-                      className="IdentificationByCountry-TableContainer"
+                      className="IdentificationByLocation-TableContainer"
                       component={Paper}
                     >
                       <Table stickyHeader>
@@ -327,7 +331,7 @@ class IdentificationByLocation extends Component {
                               <TableCell>
                                 <IconButton
                                   onClick={() =>
-                                    this.handleBirdSearch(bird.name)
+                                    this.props.changeName(bird.name)
                                   }
                                 >
                                   <SearchIcon />

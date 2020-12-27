@@ -44,7 +44,7 @@ import "./stylesheets/Credits.css";
 class Credits extends Component {
   render = () => {
     return (
-      <div class="Credits">
+      <div className="Credits">
         <h1>Credits</h1>
       </div>
     );
