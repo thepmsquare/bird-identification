@@ -9,7 +9,7 @@
 .IdentificationByCountry-TableContainer {
   max-height: 20rem;
 }
-.MuiCardContent-root {
+.IdentificationByLocation .MuiCardContent-root {
   gap: 2rem;
   display: flex;
   flex-direction: column;

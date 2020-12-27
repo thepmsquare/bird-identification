@@ -10,12 +10,12 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      id: null,
+      name: null,
     };
   }
-  changeId = (newId) => {
+  changeName = (newName) => {
     this.setState(() => {
-      return { id: newId };
+      return { name: newName };
     });
   };
   render = () => {
@@ -28,8 +28,8 @@ class App extends Component {
             render={(routeProps) => (
               <Identification
                 {...routeProps}
-                changeId={this.changeId}
-                id={this.state.id}
+                changeName={this.changeName}
+                name={this.state.name}
               />
             )}
           ></Route>
@@ -39,7 +39,7 @@ class App extends Component {
             render={(routeProps) => (
               <IdentificationByLocation
                 {...routeProps}
-                changeId={this.changeId}
+                changeName={this.changeName}
               />
             )}
           ></Route>

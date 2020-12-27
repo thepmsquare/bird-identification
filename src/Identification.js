@@ -6,7 +6,7 @@ import { VariableSizeList } from "react-window";
 import PropTypes from "prop-types";
 import axios from "axios";
 import APItoken from "./IUCNToken";
-import imageModelIDs from "./imageModelIDs.json";
+import imageModelNames from "./imageModelNames.json";
 import AudioPlayer from "material-ui-audio-player";
 import fetchJsonp from "fetch-jsonp";
 // material
@@ -156,7 +156,7 @@ class Identification extends Component {
   }
 
   componentDidMount = () => {
-    if (this.props.id) this.searchforThisBird(this.props.id);
+    if (this.props.name) this.searchforThisBird(this.props.name);
   };
 
   loadUniqueCommonNames = () => {
@@ -196,10 +196,10 @@ class Identification extends Component {
           return { isLoading: true, showingResults: false, display: {} };
         },
         () => {
-          let birdID = allBirdsWithCommonNames.find((ele) => {
+          let birdName = allBirdsWithCommonNames.find((ele) => {
             return ele.commonNames.includes(this.state.searchValue);
-          }).id;
-          this.fetchDetailsFromAPI(birdID);
+          }).name;
+          this.fetchDetailsFromAPI(birdName);
         }
       );
     } else {
@@ -258,7 +258,7 @@ class Identification extends Component {
           const sortedPredictions = allPredictions.sort(
             (element1, element2) => element2.probability - element1.probability
           );
-          this.findBirdIDFromImage(sortedPredictions[0]);
+          this.findBirdNameFromImage(sortedPredictions[0]);
         } catch (error) {
           this.setState(() => {
             return {
@@ -272,92 +272,94 @@ class Identification extends Component {
     );
   };
 
-  findBirdIDFromImage = (prediction) => {
-    let birdID = imageModelIDs.find((ele) => {
+  findBirdNameFromImage = (prediction) => {
+    let birdName = imageModelNames.find((ele) => {
       return ele.bird === prediction.className;
-    }).id;
-    this.fetchDetailsFromAPI(birdID, prediction);
+    }).name;
+    this.fetchDetailsFromAPI(birdName, prediction);
   };
 
-  fetchDetailsFromAPI = async (birdID, prediction) => {
+  fetchDetailsFromAPI = async (birdName, prediction) => {
     try {
       let display = {};
       if (prediction) {
         display.prediction = prediction;
       }
-      const individualSpeciesByID = await axios.get(
-        "https://apiv3.iucnredlist.org/api/v3/species/id/" +
-          birdID +
+      const individualSpeciesByName = await axios.get(
+        "https://apiv3.iucnredlist.org/api/v3/species/" +
+          birdName +
           "?token=" +
           APItoken
       );
-      const countryOccuranceByID = await axios.get(
-        "https://apiv3.iucnredlist.org/api/v3/species/countries/id/" +
-          birdID +
+      const countryOccuranceByName = await axios.get(
+        "https://apiv3.iucnredlist.org/api/v3/species/countries/name/" +
+          birdName +
           "?token=" +
           APItoken
       );
-      const historicalAssessmentsByID = await axios.get(
-        "https://apiv3.iucnredlist.org/api/v3/species/history/id/" +
-          birdID +
+      const historicalAssessmentsByName = await axios.get(
+        "https://apiv3.iucnredlist.org/api/v3/species/history/name/" +
+          birdName +
           "?token=" +
           APItoken
       );
-      const habitatsByID = await axios.get(
-        "https://apiv3.iucnredlist.org/api/v3/habitats/species/id/" +
-          birdID +
+      const habitatsByName = await axios.get(
+        "https://apiv3.iucnredlist.org/api/v3/habitats/species/name/" +
+          birdName +
           "?token=" +
           APItoken
       );
-      const threatsByID = await axios.get(
-        "https://apiv3.iucnredlist.org/api/v3/threats/species/id/" +
-          birdID +
+      const threatsByName = await axios.get(
+        "https://apiv3.iucnredlist.org/api/v3/threats/species/name/" +
+          birdName +
           "?token=" +
           APItoken
       );
-      const actionsByID = await axios.get(
-        "https://apiv3.iucnredlist.org/api/v3/measures/species/id/" +
-          birdID +
+      const actionsByName = await axios.get(
+        "https://apiv3.iucnredlist.org/api/v3/measures/species/name/" +
+          birdName +
           "?token=" +
           APItoken
       );
 
-      display.title = individualSpeciesByID.data.result[0].main_common_name;
+      display.title = individualSpeciesByName.data.result[0].main_common_name;
       display.taxonomy = {
-        class: individualSpeciesByID.data.result[0].class,
-        family: individualSpeciesByID.data.result[0].family,
-        genus: individualSpeciesByID.data.result[0].genus,
-        kingdom: individualSpeciesByID.data.result[0].kingdom,
-        order: individualSpeciesByID.data.result[0].order,
-        phylum: individualSpeciesByID.data.result[0].phylum,
-        scientific_name: individualSpeciesByID.data.result[0].scientific_name,
+        class: individualSpeciesByName.data.result[0].class,
+        family: individualSpeciesByName.data.result[0].family,
+        genus: individualSpeciesByName.data.result[0].genus,
+        kingdom: individualSpeciesByName.data.result[0].kingdom,
+        order: individualSpeciesByName.data.result[0].order,
+        phylum: individualSpeciesByName.data.result[0].phylum,
+        scientific_name: individualSpeciesByName.data.result[0].scientific_name,
       };
-      display.geographicRange = countryOccuranceByID.data.result.map((ele) => {
-        return { country: ele.code, value: Math.random() };
-      });
+      display.geographicRange = countryOccuranceByName.data.result.map(
+        (ele) => {
+          return { country: ele.code, value: Math.random() };
+        }
+      );
       display.population = {
-        trend: individualSpeciesByID.data.result[0].population_trend,
+        trend: individualSpeciesByName.data.result[0].population_trend,
         timeline: JSON.parse(
-          JSON.stringify(historicalAssessmentsByID.data.result)
+          JSON.stringify(historicalAssessmentsByName.data.result)
         ),
       };
-      display.habitats = habitatsByID.data.result.map(
+      display.habitats = habitatsByName.data.result.map(
         (habitat) => habitat.habitat
       );
-      display.threats = threatsByID.data.result.map((threat) => {
+      display.threats = threatsByName.data.result.map((threat) => {
         return {
           title: threat.title,
           timing: threat.timing,
           score: threat.score,
         };
       });
-      display.actions = actionsByID.data.result.map((action) => action.title);
+      display.actions = actionsByName.data.result.map((action) => action.title);
       display.audioURL = allBirdsWithCommonNames.find(
-        (bird) => bird.id === birdID
+        (bird) => bird.name === birdName
       ).soundUrl;
       let wikiJsonpResponse = await fetchJsonp(
         "https://en.wikipedia.org/w/api.php?format=json&action=query&titles=" +
-          individualSpeciesByID.data.result[0].scientific_name +
+          individualSpeciesByName.data.result[0].scientific_name +
           "&prop=pageimages&piprop=original&redirects=true"
       );
 
@@ -417,14 +419,14 @@ class Identification extends Component {
     });
   };
 
-  searchforThisBird = (id) => {
+  searchforThisBird = (name) => {
     this.setState(
       () => {
         return { isLoading: true, showingResults: false, display: {} };
       },
       () => {
-        this.fetchDetailsFromAPI(this.props.id);
-        this.props.changeId(null);
+        this.fetchDetailsFromAPI(name);
+        this.props.changeName(null);
       }
     );
   };

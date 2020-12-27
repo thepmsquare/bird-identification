@@ -194,8 +194,8 @@ class IdentificationByLocation extends Component {
     });
   };
 
-  handleBirdSearch = (id) => {
-    this.props.changeId(id);
+  handleBirdSearch = (name) => {
+    this.props.changeName(name);
     this.props.history.push("/bird-identification");
   };
 
@@ -326,7 +326,9 @@ class IdentificationByLocation extends Component {
                               <TableCell>{bird.commonName}</TableCell>
                               <TableCell>
                                 <IconButton
-                                  onClick={() => this.handleBirdSearch(bird.id)}
+                                  onClick={() =>
+                                    this.handleBirdSearch(bird.name)
+                                  }
                                 >
                                   <SearchIcon />
                                 </IconButton>
