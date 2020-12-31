@@ -35,7 +35,7 @@ class App extends Component {
       totalMonths += 12;
     }
     totalMonths += month;
-    let featuredBird = Math.floor((totalMonths * 696969 - 1) / 8);
+    let featuredBird = Math.floor((totalMonths * 6969 - 1) / 8);
     return featuredBird;
   };
 
