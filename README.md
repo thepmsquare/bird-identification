@@ -1,6 +1,6 @@
 # bird-identification (WIP)
 
-Bird Identification PWA made with ReactJS. The indented aim of this app is to identify bird species on basis of an input image.
+Bird Identification PWA made with ReactJS. The intended aim of this app is to identify bird species on the basis of an input image.
 
 ![](bird-identification.gif)
 
