@@ -1,8 +1,8 @@
 {
   "files": {
     "main.css": "/bird-identification/static/css/main.56877151.chunk.css",
-    "main.js": "/bird-identification/static/js/main.1a42e978.chunk.js",
-    "main.js.map": "/bird-identification/static/js/main.1a42e978.chunk.js.map",
+    "main.js": "/bird-identification/static/js/main.7935e54f.chunk.js",
+    "main.js.map": "/bird-identification/static/js/main.7935e54f.chunk.js.map",
     "runtime-main.js": "/bird-identification/static/js/runtime-main.c0eb0e88.js",
     "runtime-main.js.map": "/bird-identification/static/js/runtime-main.c0eb0e88.js.map",
     "static/js/2.a23d2b16.chunk.js": "/bird-identification/static/js/2.a23d2b16.chunk.js",
@@ -20,6 +20,6 @@
     "static/js/runtime-main.c0eb0e88.js",
     "static/js/2.a23d2b16.chunk.js",
     "static/css/main.56877151.chunk.css",
-    "static/js/main.1a42e978.chunk.js"
+    "static/js/main.7935e54f.chunk.js"
   ]
 }
