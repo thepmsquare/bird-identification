@@ -50,11 +50,11 @@ class Credits extends Component {
         </Typography>
         <Typography>
           Made by <a href="mailto:kajolachhra123@gmail.com">Kajol Achhra</a>,{" "}
-          <a href="mailto:2017.priyanka.ahuja@ves.ac.in">Priyanka Ahuja</a>,{" "}
-          <a href="mailto:2017.pooja.kamrani@ves.ac.in">Pooja Kamrani</a> and{" "}
+          <a href="mailto:ahujapriyanka913@gmail.com">Priyanka Ahuja</a>,{" "}
+          <a href="mailto:poojakamrani123@gmail.com">Pooja Kamrani</a> and{" "}
           <a href="https://thepmsquare.me/">Parth Mangtani</a>.
         </Typography>
-        <Link to="/bird-identification">
+        <Link to="/bird-identification" className="Credits-Back">
           <Button>Back</Button>
         </Link>
       </div>
