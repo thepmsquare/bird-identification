@@ -256,11 +256,6 @@ class Identification extends Component {
       () => {
         return {
           selectedImageHTMLSrc: null,
-          crop: {
-            unit: "%",
-            width: 80,
-            aspect: 1 / 1,
-          },
           isLoading: true,
           showingResults: false,
           display: {},
@@ -518,11 +513,6 @@ class Identification extends Component {
     this.setState(() => {
       return {
         selectedImageHTMLSrc: null,
-        crop: {
-          unit: "%",
-          width: 80,
-          aspect: 1 / 1,
-        },
       };
     });
   };
