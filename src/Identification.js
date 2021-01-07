@@ -9,6 +9,8 @@ import APItoken from "./IUCNToken";
 import imageModelNames from "./imageModelNames.json";
 import AudioPlayer from "material-ui-audio-player";
 import fetchJsonp from "fetch-jsonp";
+import ReactCrop from "react-image-crop";
+import { Link } from "react-router-dom";
 // material
 import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
@@ -41,6 +43,10 @@ import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableContainer from "@material-ui/core/TableContainer";
 import TableRow from "@material-ui/core/TableRow";
+import Dialog from "@material-ui/core/Dialog";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogActions from "@material-ui/core/DialogActions";
 // material icons
 import SearchIcon from "@material-ui/icons/Search";
 import PhotoCameraIcon from "@material-ui/icons/PhotoCamera";
@@ -50,7 +56,7 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import { WorldMap } from "react-svg-worldmap";
 // css
 import "./stylesheets/Identification.css";
-import { Link } from "react-router-dom";
+import "react-image-crop/dist/ReactCrop.css";
 
 //copy pasted from mui website to virtualize dropdown
 const LISTBOX_PADDING = 8; // px
@@ -155,12 +161,20 @@ class Identification extends Component {
         allBirdsWithCommonNames[
           this.props.featuredBird % allBirdsWithCommonNames.length
         ],
+      crop: {
+        unit: "%",
+        width: 80,
+        aspect: 1 / 1,
+      },
+      selectedImageHTMLSrc: null,
     };
     this.loadUniqueCommonNames();
   }
+
   componentDidMount = () => {
     if (this.props.name) this.searchforThisBird(this.props.name);
   };
+
   componentDidUpdate = () => {
     if (this.props.name) this.searchforThisBird(this.props.name);
   };
@@ -231,20 +245,22 @@ class Identification extends Component {
     fReader.readAsDataURL(e.target.files[0]);
     fReader.onloadend = (event) => {
       this.selectedImageHTML.src = event.target.result;
+      this.setState(() => {
+        return { selectedImageHTMLSrc: this.selectedImageHTML.src };
+      });
     };
-    this.handleImageSubmit();
-    this.setState(() => {
-      return {
-        snackbarOpen: true,
-        snackbarMessage: "Image Loaded!",
-      };
-    });
   };
 
   handleImageSubmit = () => {
     this.setState(
       () => {
         return {
+          selectedImageHTMLSrc: null,
+          crop: {
+            unit: "%",
+            width: 80,
+            aspect: 1 / 1,
+          },
           isLoading: true,
           showingResults: false,
           display: {},
@@ -265,8 +281,10 @@ class Identification extends Component {
             (element1, element2) => element2.probability - element1.probability
           );
           this.findBirdNameFromImage(sortedPredictions[0]);
+          this.selectedImageHTML = null;
         } catch (error) {
           this.setState(() => {
+            this.selectedImageHTML = null;
             return {
               isLoading: false,
               snackbarMessage: "Error in Identification",
@@ -445,6 +463,70 @@ class Identification extends Component {
     );
   };
 
+  onCropComplete = async () => {
+    this.selectedImageHTML.src = await this.getCroppedImg(
+      this.selectedImageHTML,
+      this.state.crop,
+      "newFile.jpeg"
+    );
+    this.handleImageSubmit();
+    this.setState(() => {
+      return {
+        snackbarOpen: true,
+        snackbarMessage: "Image Loaded!",
+      };
+    });
+  };
+
+  getCroppedImg = (image, crop, fileName) => {
+    const canvas = document.createElement("canvas");
+    const scaleX = image.naturalWidth / image.width;
+    const scaleY = image.naturalHeight / image.height;
+    canvas.width = crop.width;
+    canvas.height = crop.height;
+    const ctx = canvas.getContext("2d");
+
+    ctx.drawImage(
+      image,
+      crop.x * scaleX,
+      crop.y * scaleY,
+      crop.width * scaleX,
+      crop.height * scaleY,
+      0,
+      0,
+      crop.width,
+      crop.height
+    );
+
+    return new Promise((resolve, reject) => {
+      canvas.toBlob((blob) => {
+        if (!blob) {
+          //reject(new Error('Canvas is empty'));
+          console.error("Canvas is empty");
+          return;
+        }
+        blob.name = fileName;
+        window.URL.revokeObjectURL(this.fileUrl);
+        this.fileUrl = window.URL.createObjectURL(blob);
+        resolve(this.fileUrl);
+      }, "image/jpeg");
+    });
+  };
+
+  handleCropCancel = () => {
+    this.selectedImageHTML = null;
+    this.setState(() => {
+      return {
+        selectedImageHTMLSrc: null,
+        crop: {
+          unit: "%",
+          width: 80,
+          aspect: 1 / 1,
+        },
+      };
+    });
+  };
+
   render = () => {
     return (
       <div className="Identification">
@@ -496,9 +578,43 @@ class Identification extends Component {
             renderOption={(option) => <Typography noWrap>{option}</Typography>}
           />
         </form>
+
+        <Dialog open={this.state.selectedImageHTMLSrc ? true : false}>
+          <DialogTitle>Crop image</DialogTitle>
+          <DialogContent>
+            <div className="Identification-CropDialogContent">
+              <Typography>
+                Expected output: 1 of the 225 bird species (with highest
+                probability) from the trained{" "}
+                <a href="https://teachablemachine.withgoogle.com/models/-7mqg1t6m/">
+                  Machine Learning Model
+                </a>
+                , which is being used to identify birds.
+              </Typography>
+              <ReactCrop
+                crop={this.state.crop}
+                onChange={(crop) => {
+                  this.setState({ crop });
+                }}
+                src={this.state.selectedImageHTMLSrc}
+                ruleOfThirds
+              />
+            </div>
+          </DialogContent>
+          <DialogActions>
+            <Button color="primary" onClick={this.handleCropCancel}>
+              Cancel
+            </Button>
+            <Button color="primary" onClick={this.onCropComplete}>
+              Submit
+            </Button>
+          </DialogActions>
+        </Dialog>
+
         <Backdrop open={this.state.isLoading} style={{ zIndex: 10 }}>
           {this.state.isLoading && <CircularProgress color="inherit" />}
         </Backdrop>
+
         {!this.state.showingResults && (
           <div className="Identification-Links">
             <Link to="/bird-identification/locations">
