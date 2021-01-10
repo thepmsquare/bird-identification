@@ -1,7 +1,7 @@
 .Identification {
-  min-height: 100vh;
+  min-height: 96vh;
   max-width: 86vw;
-  padding: 0 2vw;
+  padding: 2vh 2vw;
   display: flex;
   flex-direction: column;
   justify-content: center;

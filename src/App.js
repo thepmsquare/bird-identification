@@ -54,7 +54,7 @@ class App extends Component {
         Object.values(parsedJson.query.pages)[0].original.source
       } )`;
       document.querySelector(".App").style.backgroundPosition = "center";
-      document.querySelector(".App").style.backgroundRepeat = "no-repeat";
+      document.querySelector(".App").style.backgroundAttachment = "fixed";
       document.querySelector(".App").style.backgroundSize = "cover";
     }
   };
