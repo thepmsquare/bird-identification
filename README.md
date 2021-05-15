@@ -10,6 +10,13 @@ To check out the project...
 
 > run "npm install" (will require node and npm)
 
+> add [IUCN Token](https://apiv3.iucnredlist.org/api/v3/token) in src/IUCNToken.js
+
+```js script
+const IUCNToken = "...";
+export default IUCNToken;
+```
+
 > run "npm start"
 
 Feedback is appreciated. Thank you!
